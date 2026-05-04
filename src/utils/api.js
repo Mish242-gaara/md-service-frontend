@@ -1,12 +1,11 @@
-
 // =============================================
 // MD SERVICE - Configuration Axios & API helpers
 // =============================================
 import axios from 'axios';
 
 // FORCE L'URL ICI pour contourner les problèmes de cache Vercel
-const API_URL = '[https://md-service-backend.onrender.com/api](https://md-service-backend.onrender.com/api)';
-export const UPLOADS_URL = '[https://md-service-backend.onrender.com](https://md-service-backend.onrender.com)';
+const API_URL = 'https://md-service-backend.onrender.com/api';
+export const UPLOADS_URL = 'https://md-service-backend.onrender.com';
 
 // Instance axios configurée
 export const api = axios.create({
@@ -28,9 +27,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      console.warn("Session expirée ou non autorisée");
       localStorage.removeItem('mds_token');
       localStorage.removeItem('mds_admin');
-      // Rediriger vers login si pas déjà dessus
+      
+      // Empêcher la boucle infinie : ne rediriger que si on n'est pas déjà sur login
       if (!window.location.pathname.includes('/admin/login')) {
         window.location.href = '/admin/login';
       }
@@ -58,9 +59,9 @@ export const formatPrice = (amount, currency = 'XAF') => {
 
 // ── WhatsApp URL ───────────────────────────────
 export const getWhatsAppUrl = (message = '') => {
-  const number = '242000000000'; // Remplace par ton vrai numéro si besoin
+  const number = '242064123456'; // <--- Mets ton vrai numéro Congo ici (ex: 24206...)
   const encoded = encodeURIComponent(message);
-  return `[https://wa.me/$](https://wa.me/$){number}?text=${encoded}`;
+  return `https://wa.me/${number}?text=${encoded}`;
 };
 
 // ── API Appartements ───────────────────────────
