@@ -1,10 +1,12 @@
+
 // =============================================
 // MD SERVICE - Configuration Axios & API helpers
 // =============================================
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-export const UPLOADS_URL = process.env.REACT_APP_UPLOADS_URL || 'http://localhost:5000';
+// FORCE L'URL ICI pour contourner les problèmes de cache Vercel
+const API_URL = '[https://md-service-backend.onrender.com/api](https://md-service-backend.onrender.com/api)';
+export const UPLOADS_URL = '[https://md-service-backend.onrender.com](https://md-service-backend.onrender.com)';
 
 // Instance axios configurée
 export const api = axios.create({
@@ -56,9 +58,9 @@ export const formatPrice = (amount, currency = 'XAF') => {
 
 // ── WhatsApp URL ───────────────────────────────
 export const getWhatsAppUrl = (message = '') => {
-  const number = process.env.REACT_APP_WHATSAPP || '242000000000';
+  const number = '242000000000'; // Remplace par ton vrai numéro si besoin
   const encoded = encodeURIComponent(message);
-  return `https://wa.me/${number}?text=${encoded}`;
+  return `[https://wa.me/$](https://wa.me/$){number}?text=${encoded}`;
 };
 
 // ── API Appartements ───────────────────────────
