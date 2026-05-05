@@ -40,7 +40,7 @@ export default function AdminApartments() {
     try {
       await apartmentsAPI.toggleAvailability(id, !current);
       setApartments(prev =>
-        prev.map(a => (a.id === id || a._id === id) ? { ...a, isAvailable: !current } : a)
+        prev.map(a => (a.id === id) ? { ...a, isAvailable: !current } : a)
       );
       toast.success(`Marqué comme ${!current ? 'disponible' : 'loué'}`);
     } catch {
@@ -58,7 +58,7 @@ export default function AdminApartments() {
     setDeleting(id);
     try {
       await apartmentsAPI.delete(id);
-      setApartments(prev => prev.filter(a => (a.id !== id && a._id !== id)));
+      setApartments(prev => prev.filter(a => a.id !== id));
       toast.success('Appartement supprimé');
     } catch (err) {
       console.error(err);
@@ -95,8 +95,8 @@ export default function AdminApartments() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="divide-y divide-gray-50">
             {apartments.map((apt, i) => {
-              // SECURITÉ: Extraction de l'ID qu'il soit nommé id ou _id (PostgreSQL vs MongoDB)
-              const currentId = apt.id || apt._id;
+              // Extraction sécurisée de l'ID (le JSON confirme que c'est "id")
+              const currentId = apt.id;
 
               return (
                 <motion.div
@@ -106,13 +106,15 @@ export default function AdminApartments() {
                   transition={{ delay: i * 0.05 }}
                   className="flex items-center gap-4 p-4 hover:bg-gray-50 transition-colors"
                 >
-                  {/* Image */}
+                  {/* Image avec fallback backend Render */}
                   <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
                     <img
                       src={apt.images?.[0] ? getImageUrl(apt.images[0].url) : ''}
                       alt={apt.title}
                       className="w-full h-full object-cover"
-                      onError={e => { e.target.src = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=200&q=60'; }}
+                      onError={e => { 
+                        e.target.src = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=200&q=60'; 
+                      }}
                     />
                   </div>
 
@@ -152,7 +154,7 @@ export default function AdminApartments() {
                       {apt.isAvailable ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}
                     </button>
 
-                    {/* Modifier - C'est ici que l'ID doit être correct */}
+                    {/* Modifier - Correction appliquée ici */}
                     <Link
                       to={`/admin/appartements/${currentId}/modifier`}
                       className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
