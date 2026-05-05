@@ -71,7 +71,6 @@ function ImageUploader({ images, onAdd, onRemove }) {
         )}
       </div>
 
-      {/* Aperçus */}
       {images.length > 0 && (
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-4">
           {images.map((img, i) => (
@@ -197,6 +196,9 @@ export default function AdminListingForm({ type }) {
   const navigate = useNavigate();
   const isEdit = !!id;
   const isApt = type === 'apartment';
+  
+  // Utilisation d'une ref pour empêcher la boucle infinie
+  const hasFetched = useRef(false);
 
   const defaultForm = isApt ? {
     title: '', description: '', location: '', pricePerNight: '',
@@ -213,18 +215,25 @@ export default function AdminListingForm({ type }) {
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(isEdit);
 
-  // Charger les données si mode édition
+  // Charger les données (Correction de la boucle infinie)
   useEffect(() => {
-    if (!isEdit) return;
-    const api = isApt ? apartmentsAPI : carsAPI;
-    api.getById(id)
-      .then(r => {
-        // CORRECTION : On fusionne les données reçues avec l'ID pour PostgreSQL
-        setForm({ ...defaultForm, ...r.data, id: id });
-      })
-      .catch(() => toast.error('Annonce introuvable'))
-      .finally(() => setFetchLoading(false));
-  }, [id, isApt, isEdit]); // Dépendances ajoutées
+    if (!isEdit || hasFetched.current) return;
+
+    const loadData = async () => {
+      hasFetched.current = true;
+      const api = isApt ? apartmentsAPI : carsAPI;
+      try {
+        const { data } = await api.getById(id);
+        setForm(prev => ({ ...prev, ...data, id: id }));
+      } catch (err) {
+        toast.error('Annonce introuvable');
+      } finally {
+        setFetchLoading(false);
+      }
+    };
+
+    loadData();
+  }, [id, isEdit, isApt]);
 
   const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
   const setPricing = (key, val) => setForm(prev => ({
@@ -237,7 +246,6 @@ export default function AdminListingForm({ type }) {
     const api = isApt ? apartmentsAPI : carsAPI;
     try {
       if (isEdit) {
-        // CORRECTION : On passe l'ID de useParams explicitement
         await api.update(id, form);
         toast.success('Annonce mise à jour !');
       } else {
@@ -275,7 +283,7 @@ export default function AdminListingForm({ type }) {
         </button>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* ── Section Infos de base ── */}
+          {/* Section Infos de base */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <h3 className="font-bold text-dark mb-5 flex items-center gap-2">
               {isApt ? <Building2 size={18} className="text-primary-600" /> : <Car size={18} className="text-primary-600" />}
@@ -333,7 +341,7 @@ export default function AdminListingForm({ type }) {
             </div>
           </div>
 
-          {/* ── Tarification ── */}
+          {/* Tarification */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <h3 className="font-bold text-dark mb-5">💰 Tarification</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -372,7 +380,7 @@ export default function AdminListingForm({ type }) {
             </div>
           </div>
 
-          {/* ── Caractéristiques ── */}
+          {/* Caractéristiques */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <h3 className="font-bold text-dark mb-5">⚙️ Caractéristiques</h3>
             {isApt ? (
@@ -416,7 +424,7 @@ export default function AdminListingForm({ type }) {
             )}
           </div>
 
-          {/* ── Équipements ── */}
+          {/* Équipements */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <h3 className="font-bold text-dark mb-4">✅ {isApt ? 'Équipements' : 'Options'}</h3>
             <CheckboxGroup
@@ -426,7 +434,7 @@ export default function AdminListingForm({ type }) {
             />
           </div>
 
-          {/* ── Médias ── */}
+          {/* Médias */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <h3 className="font-bold text-dark mb-5">📸 Photos & Vidéo</h3>
             <div className="space-y-6">
@@ -453,7 +461,7 @@ export default function AdminListingForm({ type }) {
             </div>
           </div>
 
-          {/* ── Options d'affichage ── */}
+          {/* Options d'affichage */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <h3 className="font-bold text-dark mb-4">🔧 Options d'affichage</h3>
             <div className="space-y-3">
@@ -484,7 +492,7 @@ export default function AdminListingForm({ type }) {
             </div>
           </div>
 
-          {/* ── Boutons ── */}
+          {/* Boutons */}
           <div className="flex gap-4 pb-8">
             <button 
               type="button" 
