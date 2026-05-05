@@ -197,7 +197,7 @@ export default function AdminListingForm({ type }) {
   const isEdit = !!id;
   const isApt = type === 'apartment';
   
-  // Utilisation d'une ref pour empêcher la boucle infinie
+  // Utilisation d'une ref pour verrouiller l'appel API
   const hasFetched = useRef(false);
 
   const defaultForm = isApt ? {
@@ -215,25 +215,34 @@ export default function AdminListingForm({ type }) {
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(isEdit);
 
-  // Charger les données (Correction de la boucle infinie)
+  // ── Chargement des données (Correction radicale boucle infinie) ──
   useEffect(() => {
+    // Si on n'est pas en mode édition ou si on a déjà chargé, on stoppe.
     if (!isEdit || hasFetched.current) return;
 
     const loadData = async () => {
+      // On verrouille immédiatement avant l'appel
       hasFetched.current = true;
       const api = isApt ? apartmentsAPI : carsAPI;
+      
       try {
         const { data } = await api.getById(id);
-        setForm(prev => ({ ...prev, ...data, id: id }));
+        if (data) {
+          // Utilisation de la fonction de mise à jour pour éviter de dépendre de 'form'
+          setForm(prev => ({ ...prev, ...data, id: id }));
+        }
       } catch (err) {
+        console.error("Erreur de récupération:", err);
         toast.error('Annonce introuvable');
+        hasFetched.current = false; // Permettre de réessayer si l'appel échoue vraiment
       } finally {
         setFetchLoading(false);
       }
     };
 
     loadData();
-  }, [id, isEdit, isApt]);
+    // On ne dépend que de l'ID pour éviter les triggers inutiles sur les props instables
+  }, [id, isEdit]); 
 
   const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
   const setPricing = (key, val) => setForm(prev => ({
@@ -295,7 +304,7 @@ export default function AdminListingForm({ type }) {
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Titre *</label>
                 <input
                   type="text"
-                  value={form.title}
+                  value={form.title || ''}
                   onChange={e => set('title', e.target.value)}
                   placeholder={isApt ? 'Ex: Studio moderne quartier Lumumba' : 'Ex: Toyota RAV4 2022 – Climatisé'}
                   className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
@@ -307,15 +316,15 @@ export default function AdminListingForm({ type }) {
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Marque *</label>
-                    <input type="text" value={form.brand} onChange={e => set('brand', e.target.value)} placeholder="Toyota" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" required />
+                    <input type="text" value={form.brand || ''} onChange={e => set('brand', e.target.value)} placeholder="Toyota" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" required />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Modèle *</label>
-                    <input type="text" value={form.model} onChange={e => set('model', e.target.value)} placeholder="RAV4" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" required />
+                    <input type="text" value={form.model || ''} onChange={e => set('model', e.target.value)} placeholder="RAV4" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" required />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Année *</label>
-                    <input type="number" value={form.year} onChange={e => set('year', Number(e.target.value))} min="2000" max="2030" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" required />
+                    <input type="number" value={form.year || ''} onChange={e => set('year', Number(e.target.value))} min="2000" max="2030" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" required />
                   </div>
                 </div>
               )}
@@ -323,14 +332,14 @@ export default function AdminListingForm({ type }) {
               {isApt && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Localisation *</label>
-                  <input type="text" value={form.location} onChange={e => set('location', e.target.value)} placeholder="Quartier Lumumba, Pointe-Noire" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" required />
+                  <input type="text" value={form.location || ''} onChange={e => set('location', e.target.value)} placeholder="Quartier Lumumba, Pointe-Noire" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" required />
                 </div>
               )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Description *</label>
                 <textarea
-                  value={form.description}
+                  value={form.description || ''}
                   onChange={e => set('description', e.target.value)}
                   rows={5}
                   placeholder="Décrivez le logement/véhicule en détail..."
@@ -355,13 +364,13 @@ export default function AdminListingForm({ type }) {
               {isApt ? (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Prix / nuit (24h) *</label>
-                  <input type="number" value={form.pricePerNight} onChange={e => set('pricePerNight', Number(e.target.value))} placeholder="25000" min="0" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" required />
+                  <input type="number" value={form.pricePerNight || ''} onChange={e => set('pricePerNight', Number(e.target.value))} placeholder="25000" min="0" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" required />
                 </div>
               ) : (
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Prix / jour (24h) *</label>
-                    <input type="number" value={form.pricing?.perDay} onChange={e => setPricing('perDay', Number(e.target.value))} placeholder="35000" min="0" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" required />
+                    <input type="number" value={form.pricing?.perDay || ''} onChange={e => setPricing('perDay', Number(e.target.value))} placeholder="35000" min="0" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" required />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Prix 48h (optionnel)</label>
@@ -387,15 +396,15 @@ export default function AdminListingForm({ type }) {
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Pièces</label>
-                  <input type="number" value={form.rooms} onChange={e => set('rooms', Number(e.target.value))} min="1" max="20" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" />
+                  <input type="number" value={form.rooms || 1} onChange={e => set('rooms', Number(e.target.value))} min="1" max="20" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Salles de bain</label>
-                  <input type="number" value={form.bathrooms} onChange={e => set('bathrooms', Number(e.target.value))} min="1" max="10" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" />
+                  <input type="number" value={form.bathrooms || 1} onChange={e => set('bathrooms', Number(e.target.value))} min="1" max="10" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Pers. max</label>
-                  <input type="number" value={form.maxGuests} onChange={e => set('maxGuests', Number(e.target.value))} min="1" max="20" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" />
+                  <input type="number" value={form.maxGuests || 1} onChange={e => set('maxGuests', Number(e.target.value))} min="1" max="20" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" />
                 </div>
               </div>
             ) : (
@@ -414,7 +423,7 @@ export default function AdminListingForm({ type }) {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Places</label>
-                  <input type="number" value={form.seats} onChange={e => set('seats', Number(e.target.value))} min="1" max="15" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" />
+                  <input type="number" value={form.seats || 5} onChange={e => set('seats', Number(e.target.value))} min="1" max="15" className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Couleur</label>
