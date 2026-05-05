@@ -35,7 +35,7 @@ export default function AdminApartments() {
     try {
       await apartmentsAPI.toggleAvailability(id, !current);
       setApartments(prev =>
-        prev.map(a => a._id === id ? { ...a, isAvailable: !current } : a)
+        prev.map(a => a.id === id ? { ...a, isAvailable: !current } : a)
       );
       toast.success(`Marqué comme ${!current ? 'disponible' : 'loué'}`);
     } catch {
@@ -44,13 +44,19 @@ export default function AdminApartments() {
   };
 
   const handleDelete = async (id, title) => {
+    if (!id) {
+      toast.error("Identifiant manquant");
+      return;
+    }
     if (!window.confirm(`Supprimer "${title}" ? Cette action est irréversible.`)) return;
+    
     setDeleting(id);
     try {
       await apartmentsAPI.delete(id);
-      setApartments(prev => prev.filter(a => a._id !== id));
+      setApartments(prev => prev.filter(a => a.id !== id));
       toast.success('Appartement supprimé');
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error('Erreur lors de la suppression');
     } finally {
       setDeleting(null);
@@ -83,7 +89,7 @@ export default function AdminApartments() {
           <div className="divide-y divide-gray-50">
             {apartments.map((apt, i) => (
               <motion.div
-                key={apt._id}
+                key={apt.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
@@ -122,7 +128,7 @@ export default function AdminApartments() {
                 <div className="flex items-center gap-2 shrink-0">
                   {/* Toggle disponibilité */}
                   <button
-                    onClick={() => handleToggle(apt._id, apt.isAvailable)}
+                    onClick={() => handleToggle(apt.id, apt.isAvailable)}
                     className={`p-2 rounded-xl transition-all ${
                       apt.isAvailable
                         ? 'text-green-600 hover:bg-green-50'
@@ -135,7 +141,7 @@ export default function AdminApartments() {
 
                   {/* Modifier */}
                   <Link
-                    to={`/admin/appartements/${apt._id}/modifier`}
+                    to={`/admin/appartements/${apt.id}/modifier`}
                     className="p-2 rounded-xl text-primary-600 hover:bg-primary-50 transition-all"
                     title="Modifier"
                   >
@@ -144,13 +150,12 @@ export default function AdminApartments() {
 
                   {/* Supprimer */}
                   <button
-                    onClick={() => handleDelete(apt._id, apt.title)}
-                    disabled={deleting === apt._id}
-                    className="p-2 rounded-xl text-red-500 hover:bg-red-50 transition-all
-                               disabled:opacity-40"
+                    onClick={() => handleDelete(apt.id, apt.title)}
+                    disabled={deleting === apt.id}
+                    className="p-2 rounded-xl text-red-500 hover:bg-red-50 transition-all disabled:opacity-40"
                     title="Supprimer"
                   >
-                    {deleting === apt._id
+                    {deleting === apt.id
                       ? <span className="animate-spin block w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full" />
                       : <Trash2 size={18} />
                     }
