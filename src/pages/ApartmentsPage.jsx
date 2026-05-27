@@ -1,9 +1,9 @@
 // =============================================
-// MD SERVICE - Page Liste des Appartements
+// MD SERVICE - Page Liste des Appartements (Dark Mode)
 // =============================================
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Building2, ChevronLeft, ChevronRight, FilterX } from 'lucide-react';
 import { apartmentsAPI } from '../utils/api';
 import { ApartmentCard } from '../components/listings/ListingCard';
 
@@ -16,15 +16,12 @@ export default function ApartmentsPage() {
   });
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    document.title = 'Appartements - MD Service';
-  }, []);
+  useEffect(() => { document.title = 'Appartements - MD Service'; }, []);
 
   const fetchApartments = useCallback(async () => {
     setLoading(true);
     try {
       const params = { page, limit: 9, ...filters };
-      // Supprimer les params vides
       Object.keys(params).forEach(k => !params[k] && delete params[k]);
       const { data } = await apartmentsAPI.getAll(params);
       setApartments(data.apartments);
@@ -43,12 +40,9 @@ export default function ApartmentsPage() {
     setPage(1);
   };
 
-  const handleSearch = (e) => {
-    handleFilterChange('location', e.target.value);
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+
       {/* Header */}
       <div className="bg-gradient-to-r from-primary-800 to-primary-600 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -65,17 +59,21 @@ export default function ApartmentsPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
         {/* Filtres */}
-        <div className="bg-white rounded-2xl shadow-card p-5 mb-8">
-          <div className="flex flex-wrap gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card
+                        border border-transparent dark:border-gray-700 p-5 mb-8">
+          <div className="flex flex-wrap gap-4 items-center">
+
             {/* Recherche localisation */}
             <div className="relative flex-1 min-w-[200px]">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2
+                                           text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 placeholder="Rechercher par quartier..."
                 value={filters.location}
-                onChange={handleSearch}
+                onChange={e => handleFilterChange('location', e.target.value)}
                 className="input-field pl-9"
               />
             </div>
@@ -86,7 +84,7 @@ export default function ApartmentsPage() {
               onChange={e => handleFilterChange('available', e.target.value)}
               className="input-field w-auto"
             >
-              <option value="">Tous</option>
+              <option value="">Tous les statuts</option>
               <option value="true">Disponibles uniquement</option>
             </select>
 
@@ -108,12 +106,17 @@ export default function ApartmentsPage() {
               className="input-field w-40"
             />
 
-            {/* Reset */}
+            {/* Reset corrigé (utilisation d'une icône au lieu du texte seul si souhaité) */}
             {Object.values(filters).some(Boolean) && (
               <button
-                onClick={() => { setFilters({ available: '', minPrice: '', maxPrice: '', location: '' }); setPage(1); }}
-                className="text-red-500 text-sm font-medium hover:underline whitespace-nowrap"
+                onClick={() => {
+                  setFilters({ available: '', minPrice: '', maxPrice: '', location: '' });
+                  setPage(1);
+                }}
+                className="flex items-center gap-2 text-red-500 dark:text-red-400 text-sm font-semibold
+                           hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg transition-all"
               >
+                <FilterX size={16} />
                 Réinitialiser
               </button>
             )}
@@ -136,15 +139,23 @@ export default function ApartmentsPage() {
           </div>
         ) : apartments.length === 0 ? (
           <div className="text-center py-24">
-            <Building2 size={64} className="mx-auto mb-4 text-gray-200" />
-            <h3 className="text-xl font-bold text-gray-400 mb-2">Aucun appartement trouvé</h3>
-            <p className="text-gray-400 text-sm">Essayez d'autres critères de recherche</p>
+            <Building2 size={64} className="mx-auto mb-4 text-gray-200 dark:text-gray-700" />
+            <h3 className="text-xl font-bold text-gray-400 dark:text-gray-500 mb-2">
+              Aucun appartement trouvé
+            </h3>
+            <p className="text-gray-400 dark:text-gray-600 text-sm">
+              Essayez d'autres critères de recherche
+            </p>
           </div>
         ) : (
           <>
-            <p className="text-gray-500 text-sm mb-6">
-              {pagination.total} résultat{pagination.total > 1 ? 's' : ''} · Page {pagination.page}/{pagination.totalPages}
-            </p>
+            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm mb-6">
+              <span className="font-semibold text-primary-600 dark:text-primary-400">{pagination.total}</span>
+              <span>résultat{pagination.total > 1 ? 's' : ''}</span>
+              <span className="text-gray-300 dark:text-gray-700">|</span>
+              <span>Page {pagination.page} sur {pagination.totalPages}</span>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
               {apartments.map((apt, i) => (
                 <ApartmentCard key={apt._id} apartment={apt} delay={i} />
@@ -157,8 +168,9 @@ export default function ApartmentsPage() {
                 <button
                   onClick={() => setPage(p => p - 1)}
                   disabled={!pagination.hasPrev}
-                  className="p-2 rounded-xl border border-gray-200 disabled:opacity-40
-                             hover:bg-gray-50 transition-all"
+                  className="p-2 rounded-xl border border-gray-200 dark:border-gray-700
+                             disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800
+                             text-gray-600 dark:text-gray-400 transition-all"
                 >
                   <ChevronLeft size={20} />
                 </button>
@@ -169,8 +181,8 @@ export default function ApartmentsPage() {
                     onClick={() => setPage(i + 1)}
                     className={`w-10 h-10 rounded-xl font-medium transition-all ${
                       page === i + 1
-                        ? 'bg-primary-600 text-white shadow-blue'
-                        : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                        ? 'bg-primary-600 text-white shadow-lg shadow-primary-200 dark:shadow-none'
+                        : 'border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                     }`}
                   >
                     {i + 1}
@@ -180,8 +192,9 @@ export default function ApartmentsPage() {
                 <button
                   onClick={() => setPage(p => p + 1)}
                   disabled={!pagination.hasNext}
-                  className="p-2 rounded-xl border border-gray-200 disabled:opacity-40
-                             hover:bg-gray-50 transition-all"
+                  className="p-2 rounded-xl border border-gray-200 dark:border-gray-700
+                             disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800
+                             text-gray-600 dark:text-gray-400 transition-all"
                 >
                   <ChevronRight size={20} />
                 </button>

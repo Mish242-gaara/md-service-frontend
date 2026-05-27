@@ -1,5 +1,5 @@
 // =============================================
-// MD SERVICE - Page Contact
+// MD SERVICE - Page Contact (Dark Mode)
 // =============================================
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -10,14 +10,19 @@ export default function ContactPage() {
   React.useEffect(() => { document.title = 'Contact - MD Service'; }, []);
 
   const contacts = [
-    { icon: Phone, label: 'Téléphone', val: `+${process.env.REACT_APP_WHATSAPP || '242 06 414 91 49'}`, href: `tel:+${process.env.REACT_APP_WHATSAPP}` },
-    { icon: Mail, label: 'Email', val: 'emoukouanga@gmail.com', href: 'mailto:emoukouanga@gmail.com' },
+    {
+      icon: Phone, label: 'Téléphone',
+      val: `+${process.env.REACT_APP_WHATSAPP || '242 06 875 88 27'}`,
+      href: `tel:+${process.env.REACT_APP_WHATSAPP}`
+    },
+    { icon: Mail,  label: 'Email',    val: 'joshmapembi@gmail.com', href: 'mailto:joshmapembi@gmail.com' },
     { icon: MapPin, label: 'Adresse', val: 'Pointe-Noire, Congo-Brazzaville', href: null },
-    { icon: Clock, label: 'Horaires', val: '7j/7 · 24h/24', href: null },
+    { icon: Clock,  label: 'Horaires', val: '7j/7 · 24h/24', href: null },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+
       {/* Header */}
       <div className="bg-gradient-to-r from-primary-800 to-primary-600 py-16">
         <div className="max-w-7xl mx-auto px-4 text-center">
@@ -30,28 +35,36 @@ export default function ContactPage() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid md:grid-cols-2 gap-8">
+
           {/* Infos contact */}
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-dark mb-6">Nos coordonnées</h2>
+            <h2 className="text-2xl font-bold text-dark dark:text-white mb-6">
+              Nos coordonnées
+            </h2>
             {contacts.map(({ icon: Icon, label, val, href }, i) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white rounded-2xl p-5 shadow-card flex items-center gap-4"
+                className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-card
+                           border border-transparent dark:border-gray-700
+                           flex items-center gap-4"
               >
-                <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center shrink-0">
-                  <Icon className="text-primary-600" size={22} />
+                <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/40 rounded-xl
+                                flex items-center justify-center shrink-0">
+                  <Icon className="text-primary-600 dark:text-primary-400" size={22} />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 mb-0.5">{label}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mb-0.5">{label}</p>
                   {href ? (
-                    <a href={href} className="font-semibold text-dark hover:text-primary-600 transition-colors">
+                    <a href={href}
+                       className="font-semibold text-dark dark:text-white
+                                  hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                       {val}
                     </a>
                   ) : (
-                    <p className="font-semibold text-dark">{val}</p>
+                    <p className="font-semibold text-dark dark:text-white">{val}</p>
                   )}
                 </div>
               </motion.div>
@@ -63,20 +76,22 @@ export default function ContactPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-2xl shadow-card p-8 flex flex-col items-center justify-center text-center"
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-card
+                       border border-transparent dark:border-gray-700
+                       p-8 flex flex-col items-center justify-center text-center"
           >
-            <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mb-6">
-              <MessageCircle className="text-green-600" size={40} />
+            <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-2xl
+                            flex items-center justify-center mb-6">
+              <MessageCircle className="text-green-600 dark:text-green-400" size={40} />
             </div>
-            <h3 className="text-2xl font-bold text-dark mb-3">WhatsApp</h3>
-            <p className="text-gray-500 mb-8 leading-relaxed">
+            <h3 className="text-2xl font-bold text-dark dark:text-white mb-3">WhatsApp</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">
               Le moyen le plus rapide pour nous joindre. Réponse garantie en moins d'une heure,
               même le weekend.
             </p>
             <a
               href={getWhatsAppUrl('Bonjour MD Service ! Je souhaite avoir des informations.')}
-              target="_blank"
-              rel="noreferrer"
+              target="_blank" rel="noreferrer"
               className="btn-whatsapp whatsapp-pulse text-lg px-8 py-4"
             >
               <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current">

@@ -1,29 +1,31 @@
 // =============================================
-// MD SERVICE - Page d'Accueil
+// MD SERVICE - Page d'Accueil (Dark Mode Optimized)
 // =============================================
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Building2, Car, Shield, Clock, Star, ArrowRight,
-  CheckCircle, MapPin, Phone
+  MapPin, Phone, CheckCircle2
 } from 'lucide-react';
 import { apartmentsAPI, carsAPI, getWhatsAppUrl } from '../utils/api';
-import { ApartmentCard } from '../components/listings/ListingCard';
-import { CarCard } from '../components/listings/ListingCard';
+import { ApartmentCard, CarCard } from '../components/listings/ListingCard';
+
+// ── Nouveaux Imports Ajoutés ──
+import SEO from '../components/SEO';
+import TrustBar from '../components/home/GuaranteesBar';
+import Testimonials from '../components/home/TestimonialsSection';
 
 // ── Hero Section ────────────────────────────────
 function HeroSection() {
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br
-                         from-primary-900 via-primary-800 to-primary-700">
-      {/* Pattern décoratif */}
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden
+                        bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700">
+      {/* Décors */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-10 w-72 h-72 bg-white rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-300 rounded-full blur-3xl" />
       </div>
-
-      {/* Grille décorative */}
       <div className="absolute inset-0"
         style={{
           backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)',
@@ -36,11 +38,7 @@ function HeroSection() {
 
           {/* Texte */}
           <div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
               <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm
                                text-white text-sm font-medium px-4 py-2 rounded-full mb-6
                                border border-white/20">
@@ -50,8 +48,7 @@ function HeroSection() {
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6"
               style={{ fontFamily: 'Syne' }}
@@ -62,8 +59,7 @@ function HeroSection() {
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
               className="text-white/70 text-lg mb-8 max-w-lg"
             >
@@ -72,29 +68,26 @@ function HeroSection() {
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4"
             >
-              <Link to="/appartements" className="btn-primary bg-white text-primary-700
-                                                   hover:bg-gray-100 flex items-center justify-center gap-2">
-                <Building2 size={20} />
-                Voir les appartements
+              <Link to="/appartements"
+                className="btn-primary bg-white text-primary-700 hover:bg-gray-100
+                           flex items-center justify-center gap-2">
+                <Building2 size={20} /> Voir les appartements
               </Link>
-              <Link to="/voitures" className="btn-outline border-white/40 text-white
-                                              hover:bg-white hover:text-primary-700
-                                              flex items-center justify-center gap-2">
-                <Car size={20} />
-                Voir les voitures
+              <Link to="/voitures"
+                className="btn-outline border-white/40 text-white
+                           hover:bg-white hover:text-primary-700
+                           flex items-center justify-center gap-2">
+                <Car size={20} /> Voir les voitures
               </Link>
             </motion.div>
 
             {/* Stats */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
               className="flex gap-8 mt-12"
             >
               {[
@@ -112,8 +105,7 @@ function HeroSection() {
 
           {/* Cards flottantes */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="hidden lg:block relative"
           >
@@ -159,30 +151,14 @@ function HeroSection() {
                   <span className="badge-available">Disponible</span>
                 </div>
               </motion.div>
-
-              {/* Badge WhatsApp */}
-              <motion.div
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="absolute -bottom-4 left-0 bg-green-500 text-white rounded-2xl
-                           p-4 shadow-lg flex items-center gap-3"
-              >
-                <div className="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
-                  <Phone size={16} />
-                </div>
-                <div>
-                  <p className="text-xs">Réservation rapide</p>
-                  <p className="font-bold text-sm">Via WhatsApp</p>
-                </div>
-              </motion.div>
             </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Wave bas */}
       <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="w-full h-16 fill-gray-50">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none"
+          className="w-full h-16 fill-gray-50 dark:fill-gray-900">
           <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" />
         </svg>
       </div>
@@ -194,19 +170,17 @@ function HeroSection() {
 function FeaturesSection() {
   const features = [
     { icon: Shield, title: 'Sécurisé & Fiable', desc: 'Toutes nos annonces sont vérifiées. Vous louez en toute confiance.' },
-    { icon: Clock, title: 'Disponible 24h/24', desc: 'Réservation possible à tout moment. Réponse sous 1 heure.' },
-    { icon: Star, title: 'Service Premium', desc: 'Appartements propres et voitures entretenues. Qualité garantie.' },
-    { icon: MapPin, title: 'Pointe-Noire', desc: 'Locations stratégiquement situées dans les meilleurs quartiers.' },
+    { icon: Clock,  title: 'Disponible 24h/24', desc: 'Réservation possible à tout moment. Réponse sous 1 heure.' },
+    { icon: Star,   title: 'Service Premium',   desc: 'Appartements propres et voitures entretenues. Qualité garantie.' },
+    { icon: MapPin, title: 'Pointe-Noire',      desc: 'Locations stratégiquement situées dans les meilleurs quartiers.' },
   ];
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-14">
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="section-title"
           >
             Pourquoi choisir MD Service ?
@@ -220,19 +194,18 @@ function FeaturesSection() {
           {features.map(({ icon: Icon, title, desc }, i) => (
             <motion.div
               key={title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="bg-white rounded-2xl p-6 shadow-card hover:shadow-card-hover
-                         transition-all duration-300 hover:-translate-y-1 text-center"
+              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-card
+                         hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1
+                         text-center border border-transparent dark:border-gray-700"
             >
-              <div className="w-14 h-14 bg-primary-100 rounded-2xl flex items-center
-                              justify-center mx-auto mb-4">
-                <Icon className="text-primary-600" size={28} />
+              <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-2xl
+                              flex items-center justify-center mx-auto mb-4">
+                <Icon className="text-primary-600 dark:text-primary-400" size={28} />
               </div>
-              <h3 className="font-bold text-dark mb-2">{title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+              <h3 className="font-bold text-dark dark:text-white mb-2">{title}</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{desc}</p>
             </motion.div>
           ))}
         </div>
@@ -244,7 +217,7 @@ function FeaturesSection() {
 // ── Section Appartements ────────────────────────
 function ApartmentsSection({ apartments, loading }) {
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-start md:items-center
                         justify-between mb-12 gap-4">
@@ -252,7 +225,8 @@ function ApartmentsSection({ apartments, loading }) {
             <h2 className="section-title">Appartements en vedette</h2>
             <p className="section-subtitle">Nos logements les plus prisés</p>
           </div>
-          <Link to="/appartements" className="btn-outline whitespace-nowrap flex items-center gap-2">
+          <Link to="/appartements"
+            className="btn-outline whitespace-nowrap flex items-center gap-2">
             Voir tout <ArrowRight size={18} />
           </Link>
         </div>
@@ -271,7 +245,7 @@ function ApartmentsSection({ apartments, loading }) {
             ))}
           </div>
         ) : apartments.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-gray-400 dark:text-gray-600">
             <Building2 size={48} className="mx-auto mb-4 opacity-30" />
             <p>Aucun appartement disponible pour l'instant</p>
           </div>
@@ -290,7 +264,7 @@ function ApartmentsSection({ apartments, loading }) {
 // ── Section Voitures ────────────────────────────
 function CarsSection({ cars, loading }) {
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-start md:items-center
                         justify-between mb-12 gap-4">
@@ -298,7 +272,8 @@ function CarsSection({ cars, loading }) {
             <h2 className="section-title">Voitures disponibles</h2>
             <p className="section-subtitle">Nos véhicules pour tous vos déplacements</p>
           </div>
-          <Link to="/voitures" className="btn-outline whitespace-nowrap flex items-center gap-2">
+          <Link to="/voitures"
+            className="btn-outline whitespace-nowrap flex items-center gap-2">
             Voir tout <ArrowRight size={18} />
           </Link>
         </div>
@@ -316,7 +291,7 @@ function CarsSection({ cars, loading }) {
             ))}
           </div>
         ) : cars.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-gray-400 dark:text-gray-600">
             <Car size={48} className="mx-auto mb-4 opacity-30" />
             <p>Aucune voiture disponible pour l'instant</p>
           </div>
@@ -332,36 +307,57 @@ function CarsSection({ cars, loading }) {
   );
 }
 
-// ── CTA Section ──────────────────────────────────
+// ── CTA Section (Modifiée pour supprimer la redondance) ──────────
 function CTASection() {
   return (
-    <section className="py-20 bg-primary-800">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <section className="py-24 bg-primary-800 relative overflow-hidden">
+      {/* Texture subtile en arrière-plan */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path d="M0 100 C 20 0 50 0 100 100" stroke="white" fill="transparent" strokeWidth="0.1" />
+        </svg>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Prêt à réserver ?
+          {/* Nouveau Badge de confiance (Remplace le premier bouton) */}
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 px-5 py-2 rounded-full mb-8 border border-white/20">
+            <CheckCircle2 size={16} className="text-green-400" />
+            <span className="text-xs font-bold uppercase tracking-widest">Service Client 24/7</span>
+          </div>
+
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6" style={{ fontFamily: 'Syne' }}>
+            Prêt à trouver votre bonheur ?
           </h2>
-          <p className="text-white/70 text-lg mb-8">
-            Contactez-nous dès maintenant sur WhatsApp pour une réponse instantanée
+          <p className="text-white/70 text-lg mb-10 max-w-2xl mx-auto">
+            Que ce soit pour un séjour inoubliable ou un déplacement professionnel, 
+            notre équipe à Pointe-Noire s'occupe de tout.
           </p>
-          <a
-            href={getWhatsAppUrl('Bonjour ! Je souhaite faire une réservation sur MD Service.')}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-3 bg-green-500 text-white px-8 py-4
-                       rounded-2xl font-bold text-lg hover:bg-green-600 transition-all
-                       hover:scale-105 shadow-xl"
-          >
-            <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.135.564 4.14 1.54 5.876L.057 23.569a.75.75 0 00.921.921l5.662-1.498A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.96-1.362l-.355-.212-3.683.974.985-3.6-.232-.369A9.713 9.713 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/>
-            </svg>
-            Contacter sur WhatsApp
-          </a>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            {/* Bouton Principal de conversion */}
+            <a
+              href={getWhatsAppUrl('Bonjour MD Service ! Je souhaite obtenir des informations pour une réservation.')}
+              target="_blank" rel="noreferrer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-green-500 text-white px-10 py-4
+                         rounded-2xl font-bold text-lg hover:bg-green-600 transition-all
+                         hover:scale-105 shadow-2xl shadow-green-900/20"
+            >
+              <Phone size={20} />
+              Réserver via WhatsApp
+            </a>
+
+            {/* Alternative Professionnelle */}
+            <Link 
+              to="/contact" 
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-white/80 hover:text-white border-b border-white/20 hover:border-white transition-all py-2 font-medium"
+            >
+              Plus d'options de contact <ArrowRight size={18} />
+            </Link>
+          </div>
         </motion.div>
       </div>
     </section>
@@ -376,25 +372,37 @@ export default function HomePage() {
   const [loadingCar, setLoadingCar] = useState(true);
 
   useEffect(() => {
-    document.title = 'MD Service - Location Appartements & Voitures à Pointe-Noire';
-
+    // Note: Le titre est maintenant géré par le composant <SEO />
     apartmentsAPI.getFeatured()
-      .then(r => setApartments(r.data))
-      .catch(() => setApartments([]))
+      .then(r => setApartments(r.data)).catch(() => setApartments([]))
       .finally(() => setLoadingApt(false));
-
     carsAPI.getFeatured()
-      .then(r => setCars(r.data))
-      .catch(() => setCars([]))
+      .then(r => setCars(r.data)).catch(() => setCars([]))
       .finally(() => setLoadingCar(false));
   }, []);
 
   return (
     <>
+      {/* ── SEO & Meta-données ── */}
+      <SEO 
+        title="Accueil - Location d'Appartements & Voitures" 
+        description="Réservez les meilleurs appartements et voitures à Pointe-Noire avec MD Service. Qualité premium, sécurité garantie et service client 24/7."
+      />
+
       <HeroSection />
+
+      {/* ── Section Confiance Immédiate ── */}
+      <TrustBar />
+
       <FeaturesSection />
+
       <ApartmentsSection apartments={apartments} loading={loadingApt} />
+
+      {/* ── Section Témoignages (Preuve Sociale) ── */}
+      <Testimonials />
+
       <CarsSection cars={cars} loading={loadingCar} />
+      
       <CTASection />
     </>
   );

@@ -30,8 +30,9 @@ export default function WhatsAppFAB() {
             target="_blank"
             rel="noreferrer"
             className="whatsapp-pulse flex items-center gap-3 bg-green-500 text-white
-                       px-4 py-3 rounded-2xl shadow-lg hover:bg-green-600
-                       transition-all duration-300 hover:scale-105 group"
+                       px-4 py-3 rounded-2xl shadow-lg dark:shadow-green-900/20 hover:bg-green-600
+                       transition-all duration-300 hover:scale-105 group border border-transparent 
+                       dark:border-white/10"
             title="Nous écrire sur WhatsApp"
           >
             <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current shrink-0">

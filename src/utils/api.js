@@ -3,7 +3,7 @@
 // =============================================
 import axios from 'axios';
 
-// FORCE L'URL ICI pour contourner les problèmes de cache Vercel
+// Configuration des URLs (Onrender)
 const API_URL = 'https://md-service-backend.onrender.com/api';
 export const UPLOADS_URL = 'https://md-service-backend.onrender.com';
 
@@ -13,7 +13,7 @@ export const api = axios.create({
   timeout: 30000,
 });
 
-// Injecter le token JWT dans chaque requête
+// Injecter le token JWT dans chaque requête pour les routes protégées
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('mds_token');
   if (token) {
@@ -22,7 +22,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Gérer les erreurs d'authentification
+// Gérer les erreurs de réponse (notamment 401 Unauthorized)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -31,9 +31,9 @@ api.interceptors.response.use(
       localStorage.removeItem('mds_token');
       localStorage.removeItem('mds_admin');
       
-      // Empêcher la boucle infinie : ne rediriger que si on n'est pas déjà sur login
-      if (!window.location.pathname.includes('/admin/login')) {
-        window.location.href = '/admin/login';
+      // Éviter la redirection si on est déjà sur la page login
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
       }
     }
     return Promise.reject(error);
@@ -44,10 +44,12 @@ api.interceptors.response.use(
 export const getImageUrl = (url) => {
   if (!url) return '/placeholder.jpg';
   if (url.startsWith('http')) return url;
-  return `${UPLOADS_URL}${url}`;
+  // S'assurer qu'il n'y a pas de double slash
+  const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+  return `${UPLOADS_URL}${cleanUrl}`;
 };
 
-// ── Formatage prix ─────────────────────────────
+// ── Formatage prix (XAF) ────────────────────────
 export const formatPrice = (amount, currency = 'XAF') => {
   if (!amount && amount !== 0) return 'Prix à définir';
   return new Intl.NumberFormat('fr-FR', {
@@ -59,8 +61,9 @@ export const formatPrice = (amount, currency = 'XAF') => {
 
 // ── WhatsApp URL ───────────────────────────────
 export const getWhatsAppUrl = (message = '') => {
-  const number = '242064123456'; // <--- Mets ton vrai numéro Congo ici (ex: 24206...)
-  const encoded = encodeURIComponent(message);
+  // Numéro mis à jour selon votre composant Navbar
+  const number = '242064149149'; 
+  const encoded = encodeURIComponent(message || 'Bonjour MD Service !');
   return `https://wa.me/${number}?text=${encoded}`;
 };
 
@@ -118,7 +121,21 @@ export const uploadAPI = {
   delete: (type, filename) => api.delete(`/upload/${type}/${filename}`),
 };
 
-// ── API Stats ──────────────────────────────────
+// ── API Stats & Recherche ──────────────────────
 export const statsAPI = {
   get: () => api.get('/stats'),
 };
+
+export const searchAPI = {
+  global: (query) => api.get('/search', { params: { q: query } }),
+};
+
+// ── API Favoris (Optionnel) ─────────────────────
+// Si vous décidez de sauvegarder les favoris sur le compte utilisateur
+export const favoritesAPI = {
+  get: () => api.get('/favorites'),
+  add: (type, id) => api.post('/favorites', { type, id }),
+  remove: (id) => api.delete(`/favorites/${id}`),
+};
+
+export default api;

@@ -1,18 +1,25 @@
 // =============================================
-// LOKEA - Application Principale & Routing
+// MD SERVICE - Application Principale & Routing
 // =============================================
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { HelmetProvider } from 'react-helmet-async'; // Pour le SEO
 import { AuthProvider, useAuth } from './context/AuthContext';
+
+// ── Import du Provider des Favoris ──
+import { FavoritesProvider } from './context/FavoritesContext';
 
 // Pages publiques
 import HomePage from './pages/HomePage';
+import AboutPage from './pages/AboutPage';
 import ApartmentsPage from './pages/ApartmentsPage';
 import CarsPage from './pages/CarsPage';
 import ApartmentDetailPage from './pages/ApartmentDetailPage';
 import CarDetailPage from './pages/CarDetailPage';
 import ContactPage from './pages/ContactPage';
+import FavoritesPage from './pages/FavoritesPage'; // Décommenté
+import NotFound from './pages/NotFoundPage'; // Import de la 404
 
 // Pages admin
 import AdminLogin from './pages/admin/AdminLogin';
@@ -31,13 +38,15 @@ import ScrollToTop from './components/common/ScrollToTop';
 // Route protégée admin
 const ProtectedRoute = ({ children }) => {
   const { isAuth, loading } = useAuth();
-  if (loading) return <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-600 border-t-transparent" />
-  </div>;
-  return isAuth ? children : <Navigate to="/admin/login" replace />;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-600 border-t-transparent" />
+    </div>
+  );
+  return isAuth ? children : <Navigate to="/login" replace />;
 };
 
-// Layout public (avec navbar et footer)
+// Layout public
 const PublicLayout = ({ children }) => (
   <>
     <Navbar />
@@ -52,14 +61,20 @@ function AppRoutes() {
     <Routes>
       {/* ── Routes Publiques ── */}
       <Route path="/" element={<PublicLayout><HomePage /></PublicLayout>} />
+      <Route path="/a-propos" element={<PublicLayout><AboutPage /></PublicLayout>} />
       <Route path="/appartements" element={<PublicLayout><ApartmentsPage /></PublicLayout>} />
       <Route path="/appartements/:id" element={<PublicLayout><ApartmentDetailPage /></PublicLayout>} />
       <Route path="/voitures" element={<PublicLayout><CarsPage /></PublicLayout>} />
       <Route path="/voitures/:id" element={<PublicLayout><CarDetailPage /></PublicLayout>} />
       <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
+      
+      {/* Route Favoris Activée */}
+      <Route path="/favoris" element={<PublicLayout><FavoritesPage /></PublicLayout>} />
 
-      {/* ── Routes Admin ── */}
-      <Route path="/admin/login" element={<AdminLogin />} />
+      {/* ── Authentification ── */}
+      <Route path="/login" element={<AdminLogin />} />
+
+      {/* ── Routes Admin Protégées ── */}
       <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
       <Route path="/admin/appartements" element={<ProtectedRoute><AdminApartments /></ProtectedRoute>} />
       <Route path="/admin/appartements/nouveau" element={<ProtectedRoute><AdminListingForm type="apartment" /></ProtectedRoute>} />
@@ -69,33 +84,35 @@ function AppRoutes() {
       <Route path="/admin/voitures/:id/modifier" element={<ProtectedRoute><AdminListingForm type="car" /></ProtectedRoute>} />
       <Route path="/admin/reservations" element={<ProtectedRoute><AdminReservations /></ProtectedRoute>} />
 
-      {/* 404 */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* 404 Personnalisée */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <ScrollToTop />
-        <AppRoutes />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#1e293b',
-              color: '#f8fafc',
-              borderRadius: '12px',
-              fontSize: '14px',
-            },
-            success: { iconTheme: { primary: '#22c55e', secondary: '#fff' } },
-            error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
-          }}
-        />
-      </Router>
-    </AuthProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        {/* On enveloppe tout avec FavoritesProvider pour que useFavoritesContext fonctionne */}
+        <FavoritesProvider>
+          <Router>
+            <ScrollToTop />
+            <AppRoutes />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#1e293b',
+                  color: '#f8fafc',
+                  borderRadius: '12px',
+                },
+              }}
+            />
+          </Router>
+        </FavoritesProvider>
+      </AuthProvider>
+    </HelmetProvider>
   );
 }

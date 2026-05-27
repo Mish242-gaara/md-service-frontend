@@ -1,8 +1,9 @@
 /* =============================================
-   LOKEA - Styles Globaux
+   MD Service - Styles Globaux
    ============================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,8 +26,28 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* Dark mode body */
+  .dark body {
+    background-color: #0f172a;
+    color: #f1f5f9;
+  }
+
   h1, h2, h3, h4, h5 {
     font-family: 'Syne', system-ui, sans-serif;
+  }
+
+  /* Transition fluide pour le changement de thème */
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, border-color, color, box-shadow;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+  }
+
+  /* Éviter les transitions au chargement initial */
+  .no-transition * {
+    transition: none !important;
   }
 }
 
@@ -52,43 +73,51 @@
 
   /* ── Cards ────────────────────────────────── */
   .card {
-    @apply bg-white rounded-2xl shadow-card overflow-hidden
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-card overflow-hidden
+           border border-transparent dark:border-gray-700
            transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1;
   }
 
   /* ── Badge disponibilité ──────────────────── */
   .badge-available {
-    @apply bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full;
+    @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400
+           text-xs font-semibold px-3 py-1 rounded-full;
   }
 
   .badge-occupied {
-    @apply bg-red-100 text-red-700 text-xs font-semibold px-3 py-1 rounded-full;
+    @apply bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400
+           text-xs font-semibold px-3 py-1 rounded-full;
   }
 
   .badge-pending {
-    @apply bg-yellow-100 text-yellow-700 text-xs font-semibold px-3 py-1 rounded-full;
+    @apply bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400
+           text-xs font-semibold px-3 py-1 rounded-full;
   }
 
   /* ── Input ────────────────────────────────── */
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-white
-           text-gray-800 placeholder-gray-400 outline-none
-           focus:border-primary-500 focus:ring-2 focus:ring-primary-100
+    @apply w-full px-4 py-3 rounded-xl
+           border border-gray-200 dark:border-gray-600
+           bg-white dark:bg-gray-800
+           text-gray-800 dark:text-gray-100
+           placeholder-gray-400 dark:placeholder-gray-500
+           outline-none
+           focus:border-primary-500 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900
            transition-all duration-200;
   }
 
   /* ── Section ──────────────────────────────── */
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-dark mb-4;
+    @apply text-3xl md:text-4xl font-bold text-dark dark:text-white mb-4;
   }
 
   .section-subtitle {
-    @apply text-gray-500 text-lg max-w-xl;
+    @apply text-gray-500 dark:text-gray-400 text-lg max-w-xl;
   }
 
   /* ── Skeleton loader ──────────────────────── */
   .skeleton {
-    @apply bg-gray-200 rounded animate-pulse;
+    @apply bg-gray-200 dark:bg-gray-700 rounded animate-pulse;
   }
 }
 
@@ -99,12 +128,21 @@
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
+.dark ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 10px;
 }
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 
 /* ── Animations delays ────────────────────── */
