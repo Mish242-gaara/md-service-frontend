@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function WhatsAppFAB() {
   const [visible, setVisible] = useState(false);
-  const number = process.env.REACT_APP_WHATSAPP || '242000000000';
+  const number = process.env.REACT_APP_WHATSAPP || '242068758827';
   const message = "Bonjour MD Service ! Je souhaite avoir des informations sur vos locations. 🏠🚗";
 
   useEffect(() => {

@@ -11,7 +11,7 @@ export default function WhatsAppFloat() {
   const [tooltip, setTooltip]   = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
-  const waNumber = process.env.REACT_APP_WHATSAPP || '242064149149';
+  const waNumber = process.env.REACT_APP_WHATSAPP || '242068758827';
   const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
     'Bonjour MD Service ! Je souhaite avoir des informations sur vos biens.'
   )}`;
