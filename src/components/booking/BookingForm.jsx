@@ -79,7 +79,7 @@ export default function BookingForm({ listing, type }) {
     }
   };
 
-  const waMessage = `Bonjour Lokea ! 👋
+  const waMessage = `Bonjour MD Service ! 👋
 Je souhaite réserver : *${listing.title}*
 📅 Du : ${form.startDate || '...'}
 📅 Au : ${form.endDate || '...'}
