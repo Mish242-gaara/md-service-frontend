@@ -197,7 +197,7 @@ export default function FavoritesPage() {
                 Vous avez trouvé ce qu'il vous faut ?
               </p>
               <a
-                href={`https://wa.me/${process.env.REACT_APP_WHATSAPP || '242064149149'}?text=${encodeURIComponent('Bonjour MD Service ! Je suis intéressé(e) par plusieurs de vos annonces.')}`}
+                href={`https://wa.me/${process.env.REACT_APP_WHATSAPP || '242068758827'}?text=${encodeURIComponent('Bonjour MD Service ! Je suis intéressé(e) par plusieurs de vos annonces.')}`}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600

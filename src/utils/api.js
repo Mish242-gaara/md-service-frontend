@@ -62,7 +62,7 @@ export const formatPrice = (amount, currency = 'XAF') => {
 // ── WhatsApp URL ───────────────────────────────
 export const getWhatsAppUrl = (message = '') => {
   // Numéro mis à jour selon votre composant Navbar
-  const number = '242064149149'; 
+  const number = '242068758827'; // Remplacez par votre numéro WhatsApp complet (sans espaces ni tirets)
   const encoded = encodeURIComponent(message || 'Bonjour MD Service !');
   return `https://wa.me/${number}?text=${encoded}`;
 };
